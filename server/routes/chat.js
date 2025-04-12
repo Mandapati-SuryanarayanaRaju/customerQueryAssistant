@@ -19,7 +19,7 @@ function runQuery(sql, params) {
 const fetchWithRetry = async (prompt) => {
   try {
     const response = await axios.post(
-      'https://api-inference.huggingface.co/models/google/flan-t5-base',
+      'https://api-inference.huggingface.co/models/tiiuae/falcon-7b-instruct',
       { inputs: `Q: ${prompt}\nA:` },
       {
         headers: {
@@ -93,7 +93,7 @@ router.post('/chat', verifyToken, async (req, res) => {
         ? matches.map(p => `✔ ${p.name} (Size ${p.size}) - $${p.price}\n${p.description}`).join('\n')
         : 'No matching products found.';
 
-      const prompt = `User asked: \"${userQuestion}\"\n\nProduct Info:\n${productText}\n\nGive a short and helpful answer:`;
+      const prompt = `Product Info:\n${productText}\n\nGive a short and helpful answer:`;
 
       answer = await fetchWithRetry(prompt);
       return res.json({ reply: answer });

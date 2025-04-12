@@ -10,17 +10,25 @@ import { jwtDecode } from 'jwt-decode';
 function App() {
   const token = localStorage.getItem('token');
   let role = null;
+  let isAuthenticated = false;
 
   if (token) {
     try {
       const decoded = jwtDecode(token);
-      role = decoded.role;
+      const now = Math.floor(Date.now() / 1000);
+
+      if (decoded.exp && decoded.exp > now) {
+        role = decoded.role;
+        isAuthenticated = true;
+      } else {
+        console.warn("⚠️ Token expired");
+        localStorage.removeItem('token');
+      }
     } catch (err) {
-      console.error('Invalid token');
+      console.error("❌ Invalid token:", err);
+      localStorage.removeItem('token');
     }
   }
-
-  const isAuthenticated = !!token;
 
   return (
     <Router>
